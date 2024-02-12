@@ -19,3 +19,11 @@ Xcode 12.0+
 
 --Installation--
 Download the source code, open with Xcode, build, and run.
+
+--Sources--
+
+Coordiantes of countries:
+https://gist.github.com/metal3d/5b925077e66194551df949de64e910f6
+
+Apple developer documentation:
+https://developer.apple.com/documentation/
