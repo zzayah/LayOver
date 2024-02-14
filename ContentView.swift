@@ -63,6 +63,8 @@ struct ContentView: View {
     @State var initCSV: Bool = false
     @State var initInfo: Bool = false
     
+    @State var filesDeleted: Bool = false
+    
     @State var fileNames: [String] = []
     
     @State private var isImporting = false
@@ -80,7 +82,7 @@ struct ContentView: View {
         if initInfo {
             Map(coordinateRegion: $region, annotationItems: annotationItems) { item in
                 MapAnnotation(coordinate: item.coordinate) {
-                    let size = item.severity == 4 ? 10.0 : item.severity == 3 ? 8.0 : item.severity == 2 ? 6.0 : 4.0
+                    let size = item.severity == 4 ? 12.0 : item.severity == 3 ? 10.0 : item.severity == 2 ? 8.0 : 6.0
                     Circle()
                         .fill(item.color)
                         .frame(width: size, height: size)
@@ -167,6 +169,7 @@ struct ContentView: View {
                         Text("File already slected?")
                             .font(.system(size:10))
                             .foregroundStyle(Color.red)
+                            .padding(10)
                     }
                     if self.filesLoaded > 0 {
                         ForEach(0..<self.filesLoaded, id: \.self) { index in
@@ -220,6 +223,11 @@ struct ContentView: View {
     
     func saveCSV(from url: URL) {
         
+        if !self.filesDeleted {
+            deleteFiles()
+            self.filesDeleted = true
+        }
+        
         let fileName = url.lastPathComponent
         
         if !self.fileNames.contains(fileName) {
@@ -256,6 +264,23 @@ struct ContentView: View {
         }
     }
 
+    func deleteFiles() {
+        let fileManager = FileManager.default
+        let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        
+        for i in 1...5 {
+            let fileName = "\(i).csv"
+            let filePath = documentDirectory.appendingPathComponent(fileName).path
+            
+            if fileManager.fileExists(atPath: filePath) {
+                do {
+                    try fileManager.removeItem(atPath: filePath)
+                } catch {
+                    print("deleteFiles() error")
+                }
+            }
+        }
+    }
     
     func loadData(loadDataSetNum: Int, yearPeramLoadData: String) -> [AnnotationItem] {
         var coords = loadCoordinates(coordinateFileName: "coord")
